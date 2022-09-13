@@ -77,7 +77,7 @@ def mkstim(noise_=False):
 
         num_it = 10
 
-        I = stim
+        I = torch.abs_(stim - torch.normal(0.4,0.1,stim.shape)*0.5)
         O = label
 
         for i in range(num_it):
