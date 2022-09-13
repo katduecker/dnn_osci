@@ -1,3 +1,4 @@
+# %% [code]
 # %% [code] {"execution":{"iopub.status.busy":"2022-09-13T09:31:57.549869Z","iopub.execute_input":"2022-09-13T09:31:57.550927Z","iopub.status.idle":"2022-09-13T09:31:59.540438Z","shell.execute_reply.started":"2022-09-13T09:31:57.550834Z","shell.execute_reply":"2022-09-13T09:31:59.538623Z"}}
 # -*- coding: utf-8 -*-
 
@@ -86,6 +87,8 @@ def mkstim(noise_=False):
             I = torch.cat((I,I_noise),dim=0)
 
             O = torch.cat((O,label),dim=0)
+            
+            I = I.reshape(-1,1,56,56)
 
     return I, O
 
