@@ -137,8 +137,9 @@ class net(nn.Module):
                     loss[e] += _loss
 
                     # add sparsity penalty to bias
-                    bias = self.get_parameter('conv1.bias')
-                    bias.grad += _regu[1]
+                    if self.reg:
+                        bias = self.get_parameter('conv1.bias')
+                        bias.grad += _regu[1]
 
             optimizer.step()
 
