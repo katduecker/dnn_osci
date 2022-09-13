@@ -50,9 +50,10 @@ class net(nn.Module):
             self.mini_sz = mini_sz
             self.num_ep = num_ep
             
-            # set bias to 0 and freeze
-            self.conv1.bias.data.zero_()
-            self.conv1.bias.requires_grad = False
+            # if bias is set, don't learn biases
+            if sig_param[1]:
+                self.conv1.bias.data.zero_()
+                self.conv1.bias.requires_grad = False
 
             
         
