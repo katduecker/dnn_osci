@@ -112,7 +112,8 @@ def make_minib(data,output,device,mini_sz=1):
 
         mc += mini_sz
     
-    x_mini[m+1] = data[mc:-1]
-    y_mini[m+1] = output[mc:-1]
+    if mc < data.shape[0]-1:
+        x_mini[m+1] = data[mc:-1]
+        y_mini[m+1] = output[mc:-1]
     
     return x_mini, y_mini
