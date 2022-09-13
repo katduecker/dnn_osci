@@ -83,12 +83,13 @@ def mkstim(noise_=False):
 
             # values should be between 0 and 1
             I_noise = torch.abs_(stim - torch.normal(0.4,0.1,stim.shape)*0.5)
-
+            I_noise = I_noise.reshape(-1,1,56,56)
+            
             I = torch.cat((I,I_noise),dim=0)
 
             O = torch.cat((O,label),dim=0)
             
-            I = I.reshape(-1,1,56,56)
+            
 
     return I, O
 
