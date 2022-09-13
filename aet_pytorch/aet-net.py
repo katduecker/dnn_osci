@@ -1,5 +1,6 @@
 # %% [code]
 # %% [code]
+# %% [code]
 # -*- coding: utf-8 -*-
 
 import torch
@@ -48,6 +49,10 @@ class net(nn.Module):
             # mini batch size & number of epochs
             self.mini_sz = mini_sz
             self.num_ep = num_ep
+            
+            # set bias to 0 and freeze
+            self.conv1.bias.data.zero_()
+            self.conv1.bias.requires_grad = False
 
             
         
