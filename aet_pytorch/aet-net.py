@@ -137,7 +137,7 @@ class net(nn.Module):
 
             optimizer.step()
 
-            if prin_loss:
+            if print_loss:
                 print(f'epoch: {e}, cumulative loss: {loss[e]}')
 
 
