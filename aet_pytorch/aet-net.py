@@ -1,4 +1,5 @@
 # %% [code]
+# %% [code]
 # -*- coding: utf-8 -*-
 
 import torch
@@ -94,7 +95,7 @@ class net(nn.Module):
         
         return regu_loss, regu_bias
     
-    def train(self,optimizer,noise):
+    def train(self,optimizer,noise,print_loss=True):
         
         DEVICE = torch.cuda.current_device()
         data,output = aet_stim.mkstim(noise)
@@ -136,7 +137,8 @@ class net(nn.Module):
 
             optimizer.step()
 
-            print(f'epoch: {e}, cumulative loss: {loss[e]}')
+            if prin_loss:
+                print(f'epoch: {e}, cumulative loss: {loss[e]}')
 
 
         return loss
