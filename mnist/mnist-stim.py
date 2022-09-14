@@ -65,7 +65,7 @@ def make_minib(data,mini_sz=1,set_sz=60000):
     
     shuff_idx = shuff_idx[:set_sz]
 
-    _num_minib = int(data.shape[0]/mini_sz)
+    _num_minib = int(set_sz/mini_sz)
     
     mini_idx = shuff_idx.reshape(_num_minib,mini_sz)
     
