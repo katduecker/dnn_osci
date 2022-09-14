@@ -29,7 +29,7 @@ def init_params(model):
             nn.init.constant_(m.bias, 0)
 
     # if bias is set, don't learn biases
-    if sig_param[1]:
+    if model.sig_param[1]:
         #self.conv1.bias.data.zero_()
         model.conv1.bias.requires_grad = False
     
