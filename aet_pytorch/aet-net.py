@@ -143,7 +143,7 @@ class net(nn.Module):
 
             for mb in range(mini_idx.shape[0]):
 
-                for input_,output_ in zip(data[mini_idx[mb]],output[mini_idx[mb]]):
+                for input_,output_ in zip(data[mini_idx[mb],:],output[mini_idx[mb],:]):
 
                     # forward
                     _,_,y = self.forw_conv(input_)
