@@ -35,7 +35,7 @@ def euler_dyn(model,input_,params_,t_,alpha_params,DEVICE,dyn_inp=False):
         # create boxcar function if the input is dynamic
         if dyn_inp:
             boxcar = np.zeros_like(t_)
-            boxcar[250:] = 1
+            boxcar[50:] = 1
 
         # adjust initial adaptation term (threshold)
         dRdt *= torch.max(Z)                           
