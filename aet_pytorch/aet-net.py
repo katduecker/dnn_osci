@@ -25,7 +25,7 @@ def init_params(model):
     for m in model.modules():
         # if module is a conv or linear layer, set weights
         if isinstance(m, (nn.Conv2d, nn.Linear)):
-            nn.init.normal_(m.weight,mean=0,std=0.2)
+            nn.init.xavier_uniform_(m.weight)#,mean=0,std=0.2)
             if m.bias is not None:
                 nn.init.constant_(m.bias, 0)
     
