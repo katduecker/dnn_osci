@@ -1,4 +1,3 @@
-# %% [code] {"execution":{"iopub.status.busy":"2022-09-14T14:50:09.424917Z","iopub.execute_input":"2022-09-14T14:50:09.425686Z","iopub.status.idle":"2022-09-14T14:50:09.431432Z","shell.execute_reply.started":"2022-09-14T14:50:09.425645Z","shell.execute_reply":"2022-09-14T14:50:09.429969Z"},"jupyter":{"outputs_hidden":false}}
 import torch
 from torch import nn
 import torchvision
@@ -44,6 +43,7 @@ def make_stim(train_data=True):
         
         # repeat targets
         y = torch.tile(y,(4,1))
+
     else:
         x1 = x1.reshape(-1,1,56,56)
         x2 = x2.reshape(-1,1,56,56)
@@ -58,3 +58,27 @@ def make_stim(train_data=True):
 
     
     return x, y
+
+def make_minib(data,output,device,mini_sz=-1):
+
+    shuff_idx = torch.randperm(data.shape[0])
+
+    data = data[shuff_idx[:-1]]
+    output = output[shuff_idx[:-1]]
+
+    _num_minib = int(data.shape[0]/mini_sz)
+
+    x_mini = torch.empty(_num_minib,mini_sz,data.shape[1],data.shape[2],data.shape[3]).to(device)
+    y_mini = torch.empty(_num_minib,mini_sz,output.shape[1]).to(device)
+    mc = 0   # mini batch counter
+    for m in range(_num_minib):
+        x_mini[m] = data[mc:mini_sz+mc]
+        y_mini[m] = output[mc:mini_sz+mc]
+
+        mc += mini_sz
+    
+    if mc < data.shape[0]-1:
+        x_mini[m+1] = data[mc:-1]
+        y_mini[m+1] = output[mc:-1]
+    
+    return x_mini, y_mini
