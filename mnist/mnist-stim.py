@@ -59,7 +59,7 @@ def make_stim(train_data=True):
     
     return x, y
 
-def make_minib(data,mini_sz=1,set_sz=60000):
+def make_minib(data,mini_sz,set_sz=60000):
 
     shuff_idx = torch.randperm(data.shape[0])
     
