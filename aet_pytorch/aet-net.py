@@ -19,19 +19,15 @@ def CE_loss(output_hat,output_):
 
     return -torch.sum(output_*torch.log(output_hat)) 
 
-# weight initialization
-
+# weight & bias initialization
 def init_params(model):
     
-    for m in self.modules():
-        nn.init.normal_(m.weight,mean=0,std=0.01)
-        if m.bias is not None:
-            nn.init.constant_(m.bias, 0)
-
-    # if bias is set, don't learn biases
-    if model.sig_param[1]:
-        #self.conv1.bias.data.zero_()
-        model.conv1.bias.requires_grad = False
+    for m in model.modules():
+        # if module is a conv or linear layer, set weights
+        if isinstance(m, (nn.Conv2d, nn.Linear)):
+            nn.init.normal_(m.weight,mean=0,std=0.01)
+            if m.bias is not None:
+                nn.init.constant_(m.bias, 0)
     
     return model
         
@@ -46,15 +42,20 @@ class net(nn.Module):
 
             ## NETWORK ARCHITECTURE
 
-            # convolutional layer, taking one input, number of output channels is size of hidden layer
-            self.conv1 = nn.Conv2d(1, dims[1], dims[0], stride=dims[0])
+            # convolutional & fully connected layer
+            if self.sig_param[1]: # when using set bias, don't learn
+                self.conv1 = nn.Conv2d(1, dims[1], dims[0], stride=dims[0],bias=False)
+                self.fc1 = nn.Linear(dims[1], dims[-1],bias=False)
+            else:
+                self.conv1 = nn.Conv2d(1, dims[1], dims[0], stride=dims[0],bias=True)
+                self.fc1 = nn.Linear(dims[1], dims[-1],bias=True)
+
             self.acti1 = sigmoid
             self.pool1 = torch.sum
             self.sig_param = sig_param
             self.dims = dims
 
             # Fully connected layer
-            self.fc1 = nn.Linear(dims[1], dims[-1])
             self.actiout = lfun[1]
             
             ## TRAINING PARAMETERS
