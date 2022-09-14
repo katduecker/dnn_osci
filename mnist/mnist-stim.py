@@ -8,7 +8,7 @@ import torch.nn.functional as F
 import math
 
 
-def mnist_stim():
+def make_stim():
     # download MNIST
     mnist_trainset = datasets.MNIST(root='./data', train=True, transform=torchvision.transforms.ToTensor(),target_transform=F.one_hot,download=True)
 
