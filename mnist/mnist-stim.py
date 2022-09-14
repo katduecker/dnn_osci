@@ -43,4 +43,6 @@ def make_stim(train_data=True):
     # repeat targets
     y = torch.tile(y,(4,1))
     
+    x = x.reshape(-1,1,56,56)
+    
     return x, y
