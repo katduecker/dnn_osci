@@ -73,9 +73,11 @@ def mkstim(noise_=False):
     # add noise to images
     if noise_:
 
-        stim = torch.from_numpy(np.concatenate((BIGA,BIGE,BIGT,BIGZ)))
+        stim = torch.from_numpy(np.concatenate((BIGA,BIGE,BIGT)))#,BIGZ)))
         stim = stim.reshape(-1,1,56,56)
-        label = torch.cat((torch.tile(torch.tensor((1,0,0,0)),(4,1)),torch.tile(torch.tensor((0,1,0,0)),(4,1)),torch.tile(torch.tensor((0,0,1,0)),(4,1)),torch.tile(torch.tensor((0,0,0,1)),(4,1))))
+        label = torch.cat((torch.tile(torch.tensor((1.,0.,0.)),(4,1)),torch.tile(torch.tensor((0.,1.,0.)),(4,1)),torch.tile(torch.tensor((0.,0.,1.)),(4,1))))
+
+        #label = torch.cat((torch.tile(torch.tensor((1,0,0,0)),(4,1)),torch.tile(torch.tensor((0,1,0,0)),(4,1)),torch.tile(torch.tensor((0,0,1,0)),(4,1)),torch.tile(torch.tensor((0,0,0,1)),(4,1))))
 
         num_it = 10
 
