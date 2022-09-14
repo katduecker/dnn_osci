@@ -118,13 +118,13 @@ class net(nn.Module):
         
         return regu_loss, regu_bias
     
-    def train(self,optimizer,noise=False,mnist=False,print_loss=True):
+    def train(self,optimizer,dataset='aet',noise=False,print_loss=True):
         
         DEVICE = torch.cuda.current_device()
         
-        if mnist:
+        if dataset == 'mnist':
             data,output = mnist_stim.make_stim()
-        else:
+        elif dataset == 'aet':
             data,output = aet_stim.mkstim(noise)
         data = data.to(DEVICE)
         output = output.to(DEVICE)
