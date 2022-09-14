@@ -1,4 +1,5 @@
 # %% [code]
+# %% [code]
 # %% [code] {"execution":{"iopub.status.busy":"2022-09-13T09:31:57.549869Z","iopub.execute_input":"2022-09-13T09:31:57.550927Z","iopub.status.idle":"2022-09-13T09:31:59.540438Z","shell.execute_reply.started":"2022-09-13T09:31:57.550834Z","shell.execute_reply":"2022-09-13T09:31:59.538623Z"}}
 # -*- coding: utf-8 -*-
 
@@ -26,26 +27,26 @@ def mkstim(noise_=False):
     T[6:10,6:22] = 1
     T[8:23,12:16] = 1
 
-    Z = torch.zeros((28,28))
-    Z[6:8, 6:22] = 1
-    Z[21:23, 6:22] = 1
+#     Z = torch.zeros((28,28))
+#     Z[6:8, 6:22] = 1
+#     Z[21:23, 6:22] = 1
 
-    ru = 8
-    cu = torch.arange(18,22)
-    rl = 20
+#     ru = 8
+#     cu = torch.arange(18,22)
+#     rl = 20
 
-    for i in torch.arange(13):
-        Z[ru,cu] = 1
-        ru +=1
-        cu -=1
-        rl -=1
+#     for i in torch.arange(13):
+#         Z[ru,cu] = 1
+#         ru +=1
+#         cu -=1
+#         rl -=1
 
 
     # 2. Place letters in larger image
     BIGA = torch.zeros((4,56,56))
     BIGE = torch.zeros((4,56,56))
     BIGT = torch.zeros((4,56,56))
-    BIGZ = torch.zeros((4,56,56))
+#     BIGZ = torch.zeros((4,56,56))
 
     s =  torch.arange(0,56).reshape((2,-1))     # split in half
 
@@ -59,12 +60,13 @@ def mkstim(noise_=False):
             BIGA[q,s[h,0]:s[h,-1]+1,s[w,0]:s[w,-1]+1] += A
             BIGE[q,s[h,0]:s[h,-1]+1,s[w,0]:s[w,-1]+1] += E
             BIGT[q,s[h,0]:s[h,-1]+1,s[w,0]:s[w,-1]+1] += T
-            BIGZ[q,s[h,0]:s[h,-1]+1,s[w,0]:s[w,-1]+1] += Z
+#             BIGZ[q,s[h,0]:s[h,-1]+1,s[w,0]:s[w,-1]+1] += Z
             q += 1
 
-    I = torch.cat((BIGA.reshape(4,1,56,56),BIGE.reshape(4,1,56,56),BIGT.reshape(4,1,56,56),BIGZ.reshape(4,1,56,56)))
+    I = torch.cat((BIGA.reshape(4,1,56,56),BIGE.reshape(4,1,56,56),BIGT.reshape(4,1,56,56)))#,BIGZ.reshape(4,1,56,56)))
 
-    O = torch.cat((torch.tile(torch.tensor((1.,0.,0.,0.)),(4,1)),torch.tile(torch.tensor((0.,1.,0.,0.)),(4,1)),torch.tile(torch.tensor((0.,0.,1.,0.)),(4,1)),torch.tile(torch.tensor((0.,0.,0.,1.)),(4,1))))
+    O = torch.cat((torch.tile(torch.tensor((1.,0.,0.)),(4,1)),torch.tile(torch.tensor((0.,1.,0.)),(4,1)),torch.tile(torch.tensor((0.,0.,1.)),(4,1))))
+    #O = torch.cat((torch.tile(torch.tensor((1.,0.,0.,0.)),(4,1)),torch.tile(torch.tensor((0.,1.,0.,0.)),(4,1)),torch.tile(torch.tensor((0.,0.,1.,0.)),(4,1)),torch.tile(torch.tensor((0.,0.,0.,1.)),(4,1))))
 
 
 
