@@ -18,6 +18,20 @@ def sigmoid(z,sig_param):
 def CE_loss(output_hat,output_):
 
     return -torch.sum(output_*torch.log(output_hat)) 
+
+# weight initialization
+
+def init_params(model):
+    
+    for m in self.modules():
+        nn.init.normal_(m.weight,mean=0,std=0.01)
+        if m.bias is not None:
+            nn.init.constant_(m.bias, 0)
+
+    # if bias is set, don't learn biases
+    if sig_param[1]:
+        #self.conv1.bias.data.zero_()
+        self.conv1.bias.requires_grad = False
     
 class net(nn.Module):
     
@@ -50,19 +64,6 @@ class net(nn.Module):
             # mini batch size & number of epochs
             self.mini_sz = mini_sz
             self.num_ep = num_ep
-            
-            # weight initialization
-            for m in self.modules():
-                nn.init.normal_(m.weight,mean=0,std=0.01)
-                if m.bias is not None:
-                    nn.init.constant_(m.bias, 0)
-                    
-            # if bias is set, don't learn biases
-            if sig_param[1]:
-                #self.conv1.bias.data.zero_()
-                self.conv1.bias.requires_grad = False
-            
-
             
         
         # forward sweep 
