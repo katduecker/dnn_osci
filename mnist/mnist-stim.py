@@ -56,6 +56,7 @@ def make_stim(train_data=True):
         
         y = torch.tile(y,(1,4,1))
 
+    y = y.float()
     
     return x, y
 
