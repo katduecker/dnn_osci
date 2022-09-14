@@ -31,10 +31,9 @@ def euler_dyn(model,input_,params_,t_,alpha_params,DEVICE,dyn_inp=False):
         alpha_inh = _aa*np.sin(2*np.pi*_af*t_)+_aa
 
         # preactivation (dot product of input and first weight matrix)
-        if not dyn_inp:
-            Z,_,_ = model.forw_conv(input_)
+        Z,_,_ = model.forw_conv(input_)
         # create boxcar function if the input is dynamic
-        else:
+        if dyn_inp:
             boxcar = np.zeros_like(t_)
             boxcar[250:] = 1
 
