@@ -1,6 +1,7 @@
 # %% [code]
 # %% [code]
 # %% [code]
+# %% [code]
 # -*- coding: utf-8 -*-
 
 import torch
@@ -50,10 +51,17 @@ class net(nn.Module):
             self.mini_sz = mini_sz
             self.num_ep = num_ep
             
+            # weight initialization
+            for m in self.modules():
+                nn.init.normal_(m.weight,mean=0,std=0.01)
+                if m.bias is not None:
+                    nn.init.constant_(m.bias, 0)
+                    
             # if bias is set, don't learn biases
             if sig_param[1]:
-                self.conv1.bias.data.zero_()
+                #self.conv1.bias.data.zero_()
                 self.conv1.bias.requires_grad = False
+            
 
             
         
