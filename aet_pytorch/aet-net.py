@@ -20,12 +20,15 @@ def CE_loss(output_hat,output_):
     return -torch.sum(output_*torch.log(output_hat)) 
 
 # weight & bias initialization
-def init_params(model):
+def init_params(model,weight_init='normal'):
     
     for m in model.modules():
         # if module is a conv or linear layer, set weights
         if isinstance(m, (nn.Conv2d, nn.Linear)):
-            nn.init.xavier_uniform_(m.weight)#,mean=0,std=0.2)
+            if weight_init == 'uni':
+                nn.init.xavier_uniform_(m.weight)#,mean=0,std=0.2)
+            elif weight_init == 'normal':
+                nn.init.normal_(m.weight,mean=0,std=0.02)
             if m.bias is not None:
                 nn.init.constant_(m.bias, 0)
     
