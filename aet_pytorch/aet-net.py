@@ -134,12 +134,16 @@ class net(nn.Module):
         for e in range(self.num_ep):
 
             optimizer.zero_grad()
-            x_mini,y_mini = aet_stim.make_minib(data,output,DEVICE)
+            
+            if dataset == 'mnist':
+                mini_idx = mnist_stim.make_minib(data,output,DEVICE,mini_sz=self.mini_sz)
+            elif dataset == 'aet':
+                x_mini,y_mini = aet_stim.make_minib(data,output,DEVICE,mini_sz=self.mini_sz)
             
 
-            for mb in range(x_mini.shape[0]):
+            for mb in range(mini_idx.shape[0]):
 
-                for input_,output_ in zip(x_mini[mb],y_mini[mb]):
+                for input_,output_ in zip(data[mini_idx[mb]],output[mini_idx[mb]]):
 
                     # forward
                     _,_,y = self.forw_conv(input_)
