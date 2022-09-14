@@ -136,7 +136,7 @@ class net(nn.Module):
             optimizer.zero_grad()
             
             if dataset == 'mnist':
-                mini_idx = mnist_stim.make_minib(data,output,mini_sz=self.mini_sz)
+                mini_idx = mnist_stim.make_minib(data.shape[0],mini_sz=self.mini_sz)
             elif dataset == 'aet':
                 x_mini,y_mini = aet_stim.make_minib(data,output,DEVICE,mini_sz=self.mini_sz)
             
