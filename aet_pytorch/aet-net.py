@@ -31,7 +31,10 @@ def init_params(model):
     # if bias is set, don't learn biases
     if sig_param[1]:
         #self.conv1.bias.data.zero_()
-        self.conv1.bias.requires_grad = False
+        model.conv1.bias.requires_grad = False
+    
+    return model
+        
     
 class net(nn.Module):
     
