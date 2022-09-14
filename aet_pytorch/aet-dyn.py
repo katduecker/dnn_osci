@@ -3,7 +3,7 @@ import numpy as np
 import torch
 
 # forward dynamics/discretization, euler integration
-def euler_dyn(model,input_,params_,t_,alpha_params,DEVICE,dyn_inp=False):
+def euler_dyn(model,input_,params_,t_,alpha_params,DEVICE,inp_on):
 
     # inputs:
         # input_: input image
@@ -32,10 +32,10 @@ def euler_dyn(model,input_,params_,t_,alpha_params,DEVICE,dyn_inp=False):
 
         # preactivation (dot product of input and first weight matrix)
         Z,_,_ = model.forw_conv(input_)
-        # create boxcar function if the input is dynamic
-        if dyn_inp:
-            boxcar = np.zeros_like(t_)
-            boxcar[250:] = 1
+        
+        # create boxcar function to try different input onsets
+        boxcar = np.zeros_like(t_)
+        boxcar[inp_on:] = 1
 
         # adjust initial adaptation term (threshold)
         dRdt *= torch.max(Z)                           
@@ -47,8 +47,7 @@ def euler_dyn(model,input_,params_,t_,alpha_params,DEVICE,dyn_inp=False):
         for _it,t in enumerate(t_):
 
             # dynamic input: multiply input with boxcar
-            if dyn_inp:
-                Z,_,_ = model.forw_conv(input_*boxcar[_it])
+            Z,_,_ = model.forw_conv(input_*boxcar[_it])
             
             # pre-activation
             dZdt[:,_it+1] = (Z + dhdt[:,_it] - dRdt[:,_it] - alpha_inh[_it])/T
