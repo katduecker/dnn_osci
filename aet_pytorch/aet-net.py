@@ -118,7 +118,7 @@ class net(nn.Module):
         
         return regu_loss, regu_bias
     
-    def train(self,optimizer,noise,mnist=False,print_loss=True):
+    def train(self,optimizer,noise=False,mnist=False,print_loss=True):
         
         DEVICE = torch.cuda.current_device()
         
