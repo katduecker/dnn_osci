@@ -7,6 +7,7 @@
 import torch
 from torch import nn
 import aet_stim
+import mnist_stim
 
 # sigmoid activation with option to stretch and shift
 def sigmoid(z,sig_param):
@@ -117,10 +118,14 @@ class net(nn.Module):
         
         return regu_loss, regu_bias
     
-    def train(self,optimizer,noise,print_loss=True):
+    def train(self,optimizer,noise,mnist=False,print_loss=True):
         
         DEVICE = torch.cuda.current_device()
-        data,output = aet_stim.mkstim(noise)
+        
+        if mnist:
+            data,output = mnist_stim.make_stim()
+        else:
+            data,output = aet_stim.mkstim(noise)
         data = data.to(DEVICE)
         output = output.to(DEVICE)
 
