@@ -38,11 +38,23 @@ def make_stim(train_data=True):
     x4[:,sq:,sq:] += mnist.data
 
     # concatenate quadrants
-    x = torch.concat((x1,x2,x3,x4))
+    if train_data:
+        x = torch.concat((x1,x2,x3,x4))
+        x = x.reshape(-1,1,56,56)
+        
+        # repeat targets
+        y = torch.tile(y,(4,1))
+    else:
+        x1 = x1.reshape(-1,1,56,56)
+        x2 = x2.reshape(-1,1,56,56)
+        x3 = x3.reshape(-1,1,56,56)
+        x4 = x4.reshape(-1,1,56,56)
+        
+        x = torch.concat((x1,x2,x3,x4),dim=1)
+        
+        y = y.reshape(-1,1,10)
+        
+        y = torch.tile(y,(1,4,1))
 
-    # repeat targets
-    y = torch.tile(y,(4,1))
-    
-    x = x.reshape(-1,1,56,56)
     
     return x, y
