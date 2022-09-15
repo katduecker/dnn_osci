@@ -81,7 +81,7 @@ class net(nn.Module):
         y = self.conv1(data)
         
         # pool over quadrants
-        Z = self.pool1(y,dim=(1,2))
+        Z = self.pool1(y,dim=(-2,-1))
         
         # activation
         H = sigmoid(Z,self.sig_param)
@@ -118,6 +118,7 @@ class net(nn.Module):
         
         return regu_loss, regu_bias
     
+    
     def train(self,optimizer,dataset='aet',noise=False,print_loss=True):
         
         DEVICE = torch.cuda.current_device()
@@ -132,45 +133,46 @@ class net(nn.Module):
         loss = torch.zeros((self.num_ep),).to(DEVICE)
 
         for e in range(self.num_ep):
-
-            optimizer.zero_grad()
-            
+                       
             if dataset == 'mnist':
                 mini_idx = mnist_stim.make_minib(data.shape[0],mini_sz=self.mini_sz)
             elif dataset == 'aet':
-                x_mini,y_mini = aet_stim.make_minib(data,output,DEVICE,mini_sz=self.mini_sz)
+                mini_idx = aet_stim.make_minib(data.shape[0],mini_sz=self.mini_sz)
             
 
             for mb in range(mini_idx.shape[0]):
+                
+                optimizer.zero_grad()
+                
+                _loss = 0
 
-                for input_,output_ in zip(data[mini_idx[mb],:],output[mini_idx[mb],:]):
+                # forward
+                _,_,y = self.forw_conv(data[mini_idx[mb],:])
 
-                    # forward
-                    _,_,y = self.forw_conv(input_)
+                # regularizer (if sparsity params are defined)
+                if self.reg:
+                    _regu = self.bias_regularizer(data)
+                else:
+                    _regu = torch.zeros(2)
 
-                    # regularizer (if sparsity params are defined)
-                    if self.reg:
-                        _regu = self.bias_regularizer(data)
-                    else:
-                        _regu = torch.zeros(2)
+                # loss + sparsity penalty
+                _loss += self.lossfun(y,output[mini_idx[mb],:]) + _regu[0]
+
+                # accumulate gradients for minibatch
+                _loss.backward()
+
+                # add sparsity penalty to bias
+                if self.reg:
+                    bias = self.get_parameter('conv1.bias')
+                    bias.grad += _regu[1]
                         
-                    # loss + sparsity penalty
-                    _loss = self.lossfun(y,output_) + _regu[0]
-
-                    # accumulate gradients for minibatch
-                    _loss.backward()
-
-                    loss[e] += _loss
-
-                    # add sparsity penalty to bias
-                    if self.reg:
-                        bias = self.get_parameter('conv1.bias')
-                        bias.grad += _regu[1]
-
-            optimizer.step()
+                # update after mini batch
+                optimizer.step()
+                
+            loss[e] = _loss
 
             if print_loss:
-                print(f'epoch: {e}, cumulative loss: {loss[e]}')
+                print(f'epoch: {e}, loss: {loss[e]}')
 
 
         return loss
