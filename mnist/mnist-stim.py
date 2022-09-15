@@ -68,6 +68,14 @@ def make_minib(data_sz,mini_sz,set_sz=60000):
 
     _num_minib = int(set_sz/mini_sz)
     
-    mini_idx = shuff_idx.reshape(_num_minib,mini_sz)
+    c = 0               # index counter
+    mn = 0              # mini batch counter
+    # make empty list
+    mini_idx = [None]*_num_minib
+
+    while c <= set_sz-mini_sz:
+        mini_idx[mn] = [shuff_idx[c:c+mini_sz]]
+        c += mini_sz
+        mn +=1
     
-    return mini_idx
+    return mini_idx    
