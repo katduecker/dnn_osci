@@ -122,7 +122,7 @@ class net(nn.Module):
     def train(self,optimizer,dataset='aet',noise=False,print_loss=True):
         
         DEVICE = torch.cuda.current_device()
-        
+
         if dataset == 'mnist':
             data,output = mnist_stim.make_stim()
         elif dataset == 'aet':
@@ -133,21 +133,16 @@ class net(nn.Module):
         loss = torch.zeros((self.num_ep),).to(DEVICE)
 
         for e in range(self.num_ep):
-                       
+
             if dataset == 'mnist':
                 mini_idx = mnist_stim.make_minib(data.shape[0],mini_sz=self.mini_sz)
             elif dataset == 'aet':
                 mini_idx = aet_stim.make_minib(data.shape[0],mini_sz=self.mini_sz)
-            
 
             for mb in range(mini_idx.shape[0]):
-                
-                optimizer.zero_grad()
-                
-                _loss = 0
 
                 # forward
-                _,_,y = self.forw_conv(data[mini_idx[mb],:])
+                _,_,y = self.forw_conv(data[mini_idx[mb]])
 
                 # regularizer (if sparsity params are defined)
                 if self.reg:
@@ -156,27 +151,30 @@ class net(nn.Module):
                     _regu = torch.zeros(2)
 
                 # loss + sparsity penalty
-                _loss += self.lossfun(y,output[mini_idx[mb],:]) + _regu[0]
-
+                _loss = self.lossfun(output[mini_idx[mb]],y) + _regu[0]
+                
+                optimizer.zero_grad()
                 # accumulate gradients for minibatch
                 _loss.backward()
+
+
 
                 # add sparsity penalty to bias
                 if self.reg:
                     bias = self.get_parameter('conv1.bias')
                     bias.grad += _regu[1]
-                        
-                # update after mini batch
+
+                 # update after mini batch
                 optimizer.step()
-                
-            loss[e] = _loss
+
+                loss[e] = _loss#.mean()
 
             if print_loss:
                 print(f'epoch: {e}, loss: {loss[e]}')
 
 
         return loss
-    
+
         
 
     
