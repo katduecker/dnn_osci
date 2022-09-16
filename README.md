@@ -10,7 +10,8 @@ network with one hidden layer, implemented without API
 AET_model.py: module: network implemented using automatic differentiation & matrix multiplication 
 AETZ_train.py: script training simple model on 4 stimuli, creates competitive network, plots to explore dynamics
  
-### /aet_pytorch: manual network replicated (fully) in Pytorch (for GPU support)
+### /aet_pytorch
+manual network replicated (fully) in Pytorch (for GPU support)
 
 ## Deep Networks (in progress)
 
