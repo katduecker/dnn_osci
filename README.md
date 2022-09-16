@@ -11,4 +11,6 @@ Note that these scripts are work in progress
 
 /CSHL project: integrating dynamics into CORnet-Z (Kubilius et al., 2019, NeurIPS)
 
+/mnist: network with oscillations trained on MNIST data set 
+
 /old: archived scripts
