@@ -1,4 +1,4 @@
-# dnn_osci
+# Neural networks for image classification embracing the temporal dynamics of the ventral stream
 
 Integrating oscillations into neural networks for multiplexing.
 Note that these scripts are work in progress
