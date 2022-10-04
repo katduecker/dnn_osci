@@ -127,6 +127,9 @@ class net(nn.Module):
             data,output = mnist_stim.make_stim()
         elif dataset == 'aet':
             data,output = aet_stim.mkstim(noise)
+        else:
+            data,output = dataset
+            
         data = data.to(DEVICE)
         output = output.to(DEVICE)
 
