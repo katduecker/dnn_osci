@@ -40,7 +40,7 @@ class net(nn.Module):
     
     def __init__(self, params, lfun):
 
-            super(net, self).__init__()
+            super(net,self).__init__()
 
             dims,lr,mini_sz,num_ep,reg,sig_param = params
 
@@ -138,8 +138,10 @@ class net(nn.Module):
                 mini_idx = mnist_stim.make_minib(data.shape[0],mini_sz=self.mini_sz)
             elif dataset == 'aet':
                 mini_idx = aet_stim.make_minib(data.shape[0],mini_sz=self.mini_sz)
+            else:
+                mini_idx = aet_stim.make_minib(data.shape[0],mini_sz=self.mini_sz)
 
-            for mb in range(mini_idx.shape[0]):
+            for mb in range(len(mini_idx)):
 
                 # forward
                 _,_,y = self.forw_conv(data[mini_idx[mb]])
@@ -167,12 +169,13 @@ class net(nn.Module):
                  # update after mini batch
                 optimizer.step()
 
-                loss[e] = _loss#.mean()
+            loss[e] = _loss#.mean()
 
             if print_loss:
                 print(f'epoch: {e}, loss: {loss[e]}')
 
-
+        del data, output
+        
         return loss
 
         
