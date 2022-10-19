@@ -52,7 +52,7 @@ def euler_dyn(model,input_,params_,t_,alpha_params,DEVICE,inp_on):
             
             # pre-activation
             dZdt[:,_it+1] = (Z + dhdt[:,_it] - dRdt[:,_it] - alpha_inh[_it])/T
-
+            
             # dynamics hidden layer
             dhdt[:,_it+1] = dhdt[:,_it] + dt/tau_h * (-dhdt[:,_it] + model.acti1(dZdt[:,_it+1],model.sig_param))      
 
