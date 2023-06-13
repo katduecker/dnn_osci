@@ -11,7 +11,8 @@ AET_model.py: module: network implemented using automatic differentiation & matr
 AETZ_train.py: script training simple model on 4 stimuli, creates competitive network, plots to explore dynamics
  
 ### /aet_pytorch
-manual network replicated (fully) in Pytorch (for GPU support)
+manual network replicated in Pytorch (GPU support)
+parameter optimization (learned bias) using optuna
 
 ## Deep Networks (in progress)
 
