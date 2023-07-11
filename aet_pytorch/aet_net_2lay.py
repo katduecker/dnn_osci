@@ -2,12 +2,13 @@
 # %% [code]
 # %% [code]
 # %% [code]
+# %% [code]
+# %% [code]
 # -*- coding: utf-8 -*-
 
 import torch
 from torch import nn
 import aet_stim
-#import mnist_stim
 
 # sigmoid activation with option to stretch and shift
 def sigmoid(z,sig_param):
@@ -30,6 +31,9 @@ def init_params(model,weight_init='normal'):
                 nn.init.xavier_uniform_(m.weight)#,mean=0,std=0.2)
             elif weight_init == 'normal':
                 nn.init.normal_(m.weight,mean=0,std=0.02)
+            elif weight_init == 'zero':
+                nn.init.constant_(m.weight, 0.1)
+
             if m.bias is not None:
                 nn.init.constant_(m.bias, 0)
     
@@ -42,22 +46,29 @@ class net(nn.Module):
 
             super(net,self).__init__()
 
-            dims,lr,mini_sz,num_ep,reg,sig_param = params
+            dims,lr,mini_sz,num_ep,reg,sig_param,lmbda,lay_regu = params
 
             ## NETWORK ARCHITECTURE
 
             # convolutional & fully connected layer
-            if sig_param[1]: # when using set bias, don't learn
+            if sig_param[1][1]: # when using set bias, don't learn
                 self.conv1 = nn.Conv2d(1,dims[1], dims[0], stride=dims[0],bias=False)
-                self.fc1 = nn.Linear(dims[1], dims[-1],bias=False)
+                self.fc1 = nn.Linear(dims[1], dims[2],bias=False)
+                self.fc2= nn.Linear(dims[2], dims[-1],bias=False)
             else:
                 self.conv1 = nn.Conv2d(1,dims[1], dims[0], stride=dims[0],bias=True)
-                self.fc1 = nn.Linear(dims[1], dims[-1],bias=True)
+                self.fc1 = nn.Linear(dims[1], dims[2],bias=True)
+                self.fc2 = nn.Linear(dims[2], dims[-1],bias=True)
 
             self.acti1 = sigmoid
             self.pool1 = torch.sum
             self.sig_param = sig_param
+            self.lmbda = lmbda
+            self.lay_regu = lay_regu
             self.dims = dims
+            
+            # flatten
+            self.flat = nn.Flatten()
 
             # Fully connected layer
             self.actiout = lfun[1]
@@ -78,23 +89,21 @@ class net(nn.Module):
     def forw_conv(self,data):
         
         ## convolutional layer
-        
-        if len(data.shape) ==3:
-            data = data.reshape(1,1,56,56)
-            
         y = self.conv1(data)
         
         # pool over quadrants
-        Z = self.pool1(y,dim=(-2,-1)).squeeze()
+        Z = self.pool1(y,dim=(-2,-1))
         
         # activation
-        H = sigmoid(Z,self.sig_param).squeeze()
+        H1 = sigmoid(Z,self.sig_param[0])
+        
+        H2 = sigmoid(self.fc1(H1),self.sig_param[0])
                
         # fully connect layer and activation
-        O = self.actiout(self.fc1(H))
+        O = self.actiout(self.fc2(H2))
 
         
-        return Z,H,O
+        return Z,H1,H2,O
     
     
 
@@ -103,14 +112,12 @@ class net(nn.Module):
     def bias_regularizer(self,data):
         
         DEVICE = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-        _beta, _rho = self.reg
-        rho_hat = torch.zeros((self.dims[1],)).to(DEVICE)
-        for inp in data:
+        _beta, _rho,_lay = self.reg
             
-            Z,H,_ = self.forw_conv(inp)
+        H = self.forw_conv(data)
             
-            # calculate hidden activations
-            rho_hat += H
+        # calculate hidden activations
+        rho_hat = H[_lay].sum(dim=0).to(DEVICE)
         
         rho_hat /= data.shape[0]
         
@@ -122,14 +129,26 @@ class net(nn.Module):
         
         return regu_loss, regu_bias
     
+    def ortho_regularizer(self,data):
+        
+        DEVICE = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        
+        x = self.forw_conv(data)
+        
+        H = x[self.lay_regu]
+        
+        p = torch.mean(self.flat((torch.mm(H.T,H)-torch.eye(H.shape[1])).unsqueeze(0)**2))
+        
+        return self.lmbda*p
+        
+    
     
     def train(self,optimizer,dataset='aet',noise=False,print_loss=True):
         
+        lay_sparse_penal = ['conv1.bias','fc1.bias','fc2.bias']
         DEVICE = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-        if dataset == 'mnist':
-            data,output = mnist_stim.make_stim()
-        elif dataset == 'aet':
+        if  dataset == 'aet':
             data,output = aet_stim.mkstim(noise)
         else:
             data,output = dataset
@@ -141,36 +160,33 @@ class net(nn.Module):
 
         for e in range(self.num_ep):
 
-            if dataset == 'mnist':
-                mini_idx = mnist_stim.make_minib(data.shape[0],mini_sz=self.mini_sz)
-            elif dataset == 'aet':
-                mini_idx = aet_stim.make_minib(data.shape[0],mini_sz=self.mini_sz)
-            else:
-                mini_idx = aet_stim.make_minib(data.shape[0],mini_sz=self.mini_sz)
+            mini_idx = aet_stim.make_minib(data.shape[0],mini_sz=self.mini_sz)
 
             for mb in range(len(mini_idx)):
-
+                optimizer.zero_grad()
                 # forward
-                _,_,y = self.forw_conv(data[mini_idx[mb]])
+                _,_,_,y = self.forw_conv(data[mini_idx[mb]])
 
                 # regularizer (if sparsity params are defined)
                 if self.reg:
                     _regu = self.bias_regularizer(data)
                 else:
                     _regu = torch.zeros(2)
+                    
+                lay_regu = self.ortho_regularizer(data)
 
                 # loss + sparsity penalty
-                _loss = self.lossfun(output[mini_idx[mb]],y) + _regu[0]
+                _loss = self.lossfun(output[mini_idx[mb]],y) + _regu[0] + lay_regu
                 
-                optimizer.zero_grad()
+                
                 # accumulate gradients for minibatch
                 _loss.backward()
 
 
 
                 # add sparsity penalty to bias
-                if self.reg:
-                    bias = self.get_parameter('conv1.bias')
+                if self.reg[0]:
+                    bias = self.get_parameter(lay_sparse_penal[self.reg[2]-1])
                     bias.grad += _regu[1]
 
                  # update after mini batch
@@ -184,7 +200,6 @@ class net(nn.Module):
         del data, output
         
         return loss
-
-        
-
+    
+    
     
