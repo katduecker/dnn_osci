@@ -154,7 +154,7 @@ class net(nn.Module):
                 _,_,y = self.forw_conv(data[mini_idx[mb]])
 
                 # regularizer (if sparsity params are defined)
-                if self.reg:
+                if self.reg[0]:
                     _regu = self.bias_regularizer(data)
                 else:
                     _regu = torch.zeros(2)
@@ -169,7 +169,7 @@ class net(nn.Module):
 
 
                 # add sparsity penalty to bias
-                if self.reg:
+                if self.reg[0]:
                     bias = self.get_parameter('conv1.bias')
                     bias.grad += _regu[1]
 
