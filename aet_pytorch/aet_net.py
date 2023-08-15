@@ -42,7 +42,7 @@ class net(nn.Module):
 
             super(net,self).__init__()
 
-            dims,lr,mini_sz,num_ep,reg,sig_param = params
+            dims,lr,mini_sz,num_ep,reg,sig_param,lmbda = params
 
             ## NETWORK ARCHITECTURE
 
@@ -58,6 +58,9 @@ class net(nn.Module):
             self.pool1 = torch.sum
             self.sig_param = sig_param
             self.dims = dims
+            
+            # lambda for orthogonality regularizer
+            self.lmbda = lmbda
 
             # Fully connected layer
             self.actiout = lfun[1]
@@ -123,13 +126,24 @@ class net(nn.Module):
         return regu_loss, regu_bias
     
     
+    # orthogonality regularizer
+    def ortho_regularizer(self,data):
+        
+        DEVICE = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        
+        _,H,_ = self.forw_conv(data)
+        
+        p = torch.mean(self.flat((torch.mm(H.T,H)-torch.eye(H.shape[1])).unsqueeze(0)**2))
+        
+        return self.lmbda*p
+        
+    
+    
     def train(self,optimizer,dataset='aet',noise=False,print_loss=True):
         
         DEVICE = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-        if dataset == 'mnist':
-            data,output = mnist_stim.make_stim()
-        elif dataset == 'aet':
+        if  dataset == 'aet':
             data,output = aet_stim.mkstim(noise)
         else:
             data,output = dataset
@@ -141,9 +155,7 @@ class net(nn.Module):
 
         for e in range(self.num_ep):
 
-            if dataset == 'mnist':
-                mini_idx = mnist_stim.make_minib(data.shape[0],mini_sz=self.mini_sz)
-            elif dataset == 'aet':
+            if dataset == 'aet':
                 mini_idx = aet_stim.make_minib(data.shape[0],mini_sz=self.mini_sz)
             else:
                 mini_idx = aet_stim.make_minib(data.shape[0],mini_sz=self.mini_sz)
@@ -159,8 +171,10 @@ class net(nn.Module):
                 else:
                     _regu = torch.zeros(2)
 
+
+                ortho_regu = self.ortho_regularizer(data)
                 # loss + sparsity penalty
-                _loss = self.lossfun(output[mini_idx[mb]],y) + _regu[0]
+                _loss = self.lossfun(output[mini_idx[mb]],y) + _regu[0] + ortho_regu
                 
                 optimizer.zero_grad()
                 # accumulate gradients for minibatch
