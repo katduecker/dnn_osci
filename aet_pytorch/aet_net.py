@@ -12,7 +12,7 @@ import aet_stim
 # sigmoid activation with option to stretch and shift
 def sigmoid(z,sig_param):
 
-    _slope,_bias = sig_param
+    _slope,_bias,_ = sig_param
 
     return 1.0/(1.0+torch.exp(-_slope*(z+_bias)))
 
