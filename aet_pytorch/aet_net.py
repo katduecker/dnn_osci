@@ -48,11 +48,12 @@ class net(nn.Module):
 
             # convolutional & fully connected layer
             if sig_param[2]: # when using set bias, don't learn
-                self.conv1 = nn.Conv2d(1,dims[1], dims[0], stride=dims[0],bias=False)
-                self.fc1 = nn.Linear(dims[1], dims[-1],bias=False)
-            else:
+                
                 self.conv1 = nn.Conv2d(1,dims[1], dims[0], stride=dims[0],bias=True)
                 self.fc1 = nn.Linear(dims[1], dims[-1],bias=True)
+            else:
+                self.conv1 = nn.Conv2d(1,dims[1], dims[0], stride=dims[0],bias=False)
+                self.fc1 = nn.Linear(dims[1], dims[-1],bias=False)
 
             self.acti1 = sigmoid
             self.pool1 = torch.sum
