@@ -47,7 +47,7 @@ class net(nn.Module):
             ## NETWORK ARCHITECTURE
 
             # convolutional & fully connected layer
-            if sig_param[1]: # when using set bias, don't learn
+            if sig_param[2]: # when using set bias, don't learn
                 self.conv1 = nn.Conv2d(1,dims[1], dims[0], stride=dims[0],bias=False)
                 self.fc1 = nn.Linear(dims[1], dims[-1],bias=False)
             else:
