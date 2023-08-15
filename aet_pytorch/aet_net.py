@@ -61,6 +61,11 @@ class net(nn.Module):
             
             # lambda for orthogonality regularizer
             self.lmbda = lmbda
+            
+            
+            # flatten
+            self.flat = nn.Flatten()
+
 
             # Fully connected layer
             self.actiout = lfun[1]
