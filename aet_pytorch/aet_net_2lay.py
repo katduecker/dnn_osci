@@ -13,7 +13,7 @@ import aet_stim
 # sigmoid activation with option to stretch and shift
 def sigmoid(z,sig_param):
 
-    _slope,_bias = sig_param
+    _slope,_bias,_ = sig_param
 
     return 1.0/(1.0+torch.exp(-_slope*(z+_bias)))
 
@@ -51,14 +51,18 @@ class net(nn.Module):
             ## NETWORK ARCHITECTURE
 
             # convolutional & fully connected layer
-            if sig_param[1][1]: # when using set bias, don't learn
-                self.conv1 = nn.Conv2d(1,dims[1], dims[0], stride=dims[0],bias=False)
-                self.fc1 = nn.Linear(dims[1], dims[2],bias=False)
-                self.fc2= nn.Linear(dims[2], dims[-1],bias=False)
+            if sig_param[0][2]: # when using set bias, don't learn
+                self.conv1 = nn.Conv2d(1,dims[1], dims[0], stride=dims[0],bias=True)
             else:
                 self.conv1 = nn.Conv2d(1,dims[1], dims[0], stride=dims[0],bias=True)
+
+            if sig_param[1][2]: # when using set bias, don't learn
+
                 self.fc1 = nn.Linear(dims[1], dims[2],bias=True)
-                self.fc2 = nn.Linear(dims[2], dims[-1],bias=True)
+                self.fc2= nn.Linear(dims[2], dims[-1],bias=True)
+            else:
+                self.fc1 = nn.Linear(dims[1], dims[2],bias=False)
+                self.fc2 = nn.Linear(dims[2], dims[-1],bias=False)
 
             self.acti1 = sigmoid
             self.pool1 = torch.sum
@@ -97,7 +101,7 @@ class net(nn.Module):
         # activation
         H1 = sigmoid(Z,self.sig_param[0])
         
-        H2 = sigmoid(self.fc1(H1),self.sig_param[0])
+        H2 = sigmoid(self.fc1(H1),self.sig_param[1])
                
         # fully connect layer and activation
         O = self.actiout(self.fc2(H2))
