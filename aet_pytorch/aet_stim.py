@@ -15,21 +15,21 @@ def mkstim(noise_=False):
     A[5:8,8:19] = 1
     A[16:19,8:19] = 1
     A[8:23,19:22] = 1
-    
-    A = A/torch.sum(A)
-
 
     E = torch.zeros((28,28))
     E[4:23,6:9] = 1
     E[4:7,8:21] = 1
     E[12:15,8:21] = 1
     E[20:23,8:21] = 1
-    E = E/torch.sum(E)
 
     T = torch.zeros((28,28))
     T[6:10,6:22] = 1
-    T[8:23,12:16] = 1
-    T = T/torch.sum(T)
+    T[8:23,12:16] = 1    
+    
+   # align brightness of stimuli
+   A = A*(torch.sum(T)/torch.sum(A))
+   E = E*(torch.sum(T)/torch.sum(E))
+   
 #     Z = torch.zeros((28,28))
 #     Z[6:8, 6:22] = 1
 #     Z[21:23, 6:22] = 1
