@@ -25,10 +25,9 @@ def mkstim(noise_=False):
     T = torch.zeros((28,28))
     T[6:10,6:22] = 1
     T[8:23,12:16] = 1    
-    
-   # align brightness of stimuli
-   A = A*(torch.sum(T)/torch.sum(A))
-   E = E*(torch.sum(T)/torch.sum(E))
+    # align brightness of stimuli
+    A = A*(torch.sum(T)/torch.sum(A))
+    E = E*(torch.sum(T)/torch.sum(E))
    
 #     Z = torch.zeros((28,28))
 #     Z[6:8, 6:22] = 1
