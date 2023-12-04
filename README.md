@@ -1,28 +1,25 @@
-# Neural networks for image classification embracing the temporal dynamics of the ventral stream
+# Dynamical Artificial Neural Network embracing the temporal dynamics of the ventral stream
 
-Integrating oscillations into neural networks for multiplexing.
-Note that these scripts are work in progress
+for pre-print, see: https://www.biorxiv.org/content/10.1101/2023.11.27.568876v1
 
-## One-layer "toy model"
+use DynANN.ipynb to run code and reproduce figures in manuscript
 
-### /manual
-network with one hidden layer, implemented without API
-AET_model.py: module: network implemented using automatic differentiation & matrix multiplication 
-AETZ_train.py: script training simple model on 4 stimuli, creates competitive network, plots to explore dynamics
- 
 ### /aet_pytorch
-manual network replicated in Pytorch (GPU support)
-parameter optimization (learned bias) using optuna
+contains all scripts to implement and train a neural network on the AET problem
 
-## Deep Networks (in progress)
+aet_net: code to implement network structure for 1-layer network (a 2-layer network did a better job at segregating competing inputs, so this is not explored in manuscript)
 
-### /CSHL project
-integrating dynamics into CORnet-Z (Kubilius et al., 2019, NeurIPS)
+aet_net_2lay: code to implement network structure for 2-layer network
 
-### /mnist
-network with oscillations trained on MNIST data set 
+aet_stim: generate visual inputs and minibatches
+
+aet_dyn: Euler integration as functions (however, these are explicitly coded in current notebook)
+
+aet_optuna_bear: exploratory script, finding tunable parameters with optuna (optimized for HPC)
+
+*work in progress*
+mnist_net: extension of ideas to network trained on MNIST
+mnist_stim: create mini batches of MNIST stimuli
 
 
 
-
-/old: archived scripts
