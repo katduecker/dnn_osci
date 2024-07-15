@@ -7,14 +7,14 @@
 import torch
 from torch import nn
 import aet_stim
-#import mnist_stim
+import numpy as np
 
 # sigmoid activation with option to stretch and shift
 def sigmoid(z,sig_param):
 
-    _slope,_bias,_ = sig_param
+    _slope,_bias = sig_param
 
-    return 1.0/(1.0+torch.exp(-_slope*(z+_bias)))
+    return 1.0/(1.0+np.exp(-_slope*(z+_bias)))
 
 def CE_loss(output_hat,output_):
 
