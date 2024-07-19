@@ -17,9 +17,6 @@ aet_dyn: Euler integration as functions (however, these are explicitly coded in 
 
 aet_optuna_bear: exploratory script, finding tunable parameters with optuna (optimized for HPC)
 
-*work in progress*
-mnist_net: extension of ideas to network trained on MNIST
-mnist_stim: create mini batches of MNIST stimuli
-
+aet_figures: script to create all figures in publication
 
 
